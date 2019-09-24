@@ -17,13 +17,7 @@ public class ExcelConstant {
     public static final int TYPE_DATE_FORMAT_YEAR_MONTH = 3;
     public static final int TYPE_DATE_FORMAT_YEAR_MONTH_DAY = 4;
 
-//    public static final int TYPE_NUMBER_FORMAT_TWO_POINT = 2;
-//    public static final int TYPE_NUMBER_FORMAT_THREE_POINT = 3;
-//    public static final int TYPE_NUMBER_FORMAT_FOUR_POINT = 4;
-//    public static final int TYPE_NUMBER_FORMAT_FIVE_POINT = 5;
-
     /**
-     *
      * @param type
      * @param date
      * @return
