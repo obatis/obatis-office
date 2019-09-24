@@ -21,34 +21,12 @@ import java.util.regex.Pattern;
 
 /**
  * excel导出类
- * @author heChengBo
+ * @author HuangLongPu
  * @date 2018年11月13日10:30:05
  */
-public class ExportUtil {
+public class ExportExcel {
 
     private static Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+.*[0-9]*");
-
-    /**
-     * web端调用直接导出文档类
-     * @param response web传入
-     * @param param 标题参数传入
-     * @param list 导出数据
-     * @param fileName 导出文件名称
-     */
-//    public static void exportExcelDownload(HttpServletResponse response, ExcelParam param, List<List<String>> list, String fileName){
-//        try {
-//            HSSFWorkbook wb = ExportUtil.exportExcel(param, list);
-//            response.setContentType("application/vnd.ms-excel");
-//            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName + ".xls", "utf-8"));
-//            OutputStream outputStream = response.getOutputStream();
-//            wb.write(outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 
     /**
      * 设置style
@@ -272,7 +250,6 @@ public class ExportUtil {
     private static void setMaxWidth(Map<Integer,Integer> maxWidth, int column, byte[] b){
         maxWidth.put(column, b.length * 256 + 200);
     }
-
 
     /**
      * @date  2018年11月26日14:57:25

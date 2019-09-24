@@ -12,7 +12,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ImportUtil {
+public class ImportExcel {
 
 	private static final String MERGE_FLAG = "flag";
 	private static final String MERGE_IS_VALUE = "isValue";
@@ -20,13 +20,12 @@ public class ImportUtil {
 
 	/**
 	 * data为Excel流数据，表示从第2行开始读取数据，类似数组下标为1
-	 *
 	 * @param is
 	 * @return
 	 * @throws Exception
 	 */
 	public static List<List<String>> readExcel(InputStream is) throws Exception {
-		// 表示从第2行开始读取
+		// 表示默认从第2行开始读取，不读取第一行的标题
 		return readExcel(is, 1);
 	}
 
@@ -190,7 +189,7 @@ public class ImportUtil {
 //     * @return
 //     */
 //	public static <T> List<T> excelToList(File f, Class<T> cls, List<String> errorMsg) {
-//		List<T> list = ImportUtil.excelHandle(f, ImportUtil.getImpFiled(cls), cls, errorMsg);
+//		List<T> list = ImportExcel.excelHandle(f, ImportExcel.getImpFiled(cls), cls, errorMsg);
 //		return list;
 //	}
 //
@@ -209,7 +208,7 @@ public class ImportUtil {
 //		//错误提示信息
 //		try {
 //			InputStream in = new FileInputStream(file);
-//			List<List<String>> list = ImportUtil.readExcel(in,1);
+//			List<List<String>> list = ImportExcel.readExcel(in,1);
 //			in.close();
 //			for(int i = 0, j=list.size(); i<j; i++) {
 //				List<String> rowValue = list.get(i);

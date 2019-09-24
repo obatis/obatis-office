@@ -13,16 +13,22 @@ public class ExcelParam {
      * 头标题
      */
     private String header;
-
+    /**
+     * 字符串信息描述显示
+     */
     private String headerMidString;
+    /**
+     * 头部html片段显示
+     */
     private String headerMidHtml;
+    /**
+     * 尾部html片段显示
+     */
     private String headerEndHtml;
-
     /**
      * 列标题
      */
     private List<ExcelSubParam> column = new ArrayList<>();
-
     /**
      * 是否需要序号，false
      */

@@ -21,7 +21,6 @@ public class ExcelSubParam {
      * 字段格式,默认0
      */
     private String format;
-
     /**
      * 子字段字段，如果没有则默认使用
      */
