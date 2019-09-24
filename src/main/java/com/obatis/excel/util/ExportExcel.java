@@ -82,10 +82,7 @@ public class ExportExcel {
 
         }
         if(null != param.getHeaderMidHtml()){
-//            HSSFRow row = sheet1.createRow(titleRow);
-//            row.createCell(0).setCellValue(param.getHeaderMidHtml());
             int rowNumber = setHtmlStyle(param.getHeaderMidHtml(), wb, titleRow, sheet1);
-//            titleRow = titleRow + 1;
             titleRow = rowNumber;
         }
 
@@ -146,8 +143,8 @@ public class ExportExcel {
         if(null != param.getHeaderEndHtml()){
             setHtmlStyle(param.getHeaderEndHtml(), wb, endRow, sheet1);
         }
-        setMergeOtherCell(columnNumber, param, sheet1, endRow);
 
+        setMergeOtherCell(columnNumber, param, sheet1, endRow);
         return wb;
     }
 
