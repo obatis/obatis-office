@@ -11,11 +11,11 @@ import java.util.Date;
  */
 public class ExcelConstant {
 
-    public static final int TYPE_DATE_FORMAT_DATE = 0;
-    public static final int TYPE_DATE_FORMAT_TIME = 1;
-    public static final int TYPE_DATE_FORMAT_DAY = 2;
-    public static final int TYPE_DATE_FORMAT_YEAR_MONTH = 3;
-    public static final int TYPE_DATE_FORMAT_YEAR_MONTH_DAY = 4;
+    public static final int TYPE_DATE_TIME = 0;
+    public static final int TYPE_TIME_MILLIS = 1;
+    public static final int TYPE_DATE = 2;
+    public static final int TYPE_YEAR_MONTH_JOINT = 3;
+    public static final int TYPE_DATE_JOINT = 4;
 
     /**
      * @param type
@@ -25,15 +25,15 @@ public class ExcelConstant {
     public static String getDateString(String type, Object date){
 
 		SimpleDateFormat sdf = null;
-        if(type.equals(String.valueOf(TYPE_DATE_FORMAT_DATE))){
+        if(type.equals(String.valueOf(TYPE_DATE_TIME))){
         	sdf = DefaultDateConstant.SD_FORMAT_DATE_TIME;
-        }else if(type.equals(String.valueOf(TYPE_DATE_FORMAT_TIME))){
+        }else if(type.equals(String.valueOf(TYPE_TIME_MILLIS))){
             sdf = DefaultDateConstant.SD_FORMAT_TIME_MILLIS;
-        }else if(type.equals(String.valueOf(TYPE_DATE_FORMAT_DAY))){
+        }else if(type.equals(String.valueOf(TYPE_DATE))){
             sdf = DefaultDateConstant.SD_FORMAT_DATE;
-        }else if(type.equals(String.valueOf(TYPE_DATE_FORMAT_YEAR_MONTH))){
+        }else if(type.equals(String.valueOf(TYPE_YEAR_MONTH_JOINT))){
             sdf = DefaultDateConstant.SD_FORMAT_YEAR_MONTH_JOINT;
-        }else if(type.equals(String.valueOf(TYPE_DATE_FORMAT_YEAR_MONTH_DAY))){
+        }else if(type.equals(String.valueOf(TYPE_DATE_JOINT))){
             sdf = DefaultDateConstant.SD_FORMAT_DATE_JOINT;
         }
 
