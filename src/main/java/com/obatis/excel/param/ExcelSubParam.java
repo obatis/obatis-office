@@ -24,7 +24,7 @@ public class ExcelSubParam {
     /**
      * 子字段字段，如果没有则默认使用
      */
-    private List<ExcelSubParam> subParam = new ArrayList<ExcelSubParam>();
+    private List<ExcelSubParam> subParam = new ArrayList<>();
 
     public String getNameCn() {
         return nameCn;
