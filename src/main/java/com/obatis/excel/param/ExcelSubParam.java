@@ -1,5 +1,7 @@
 package com.obatis.excel.param;
 
+import com.obatis.excel.constant.ColumnTypeEnum;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class ExcelSubParam {
     /**
      * 字段类型
      */
-    private String type = "-1";
+    private ColumnTypeEnum type = ColumnTypeEnum.STRING;
     /**
      * 字段格式,默认0
      */
@@ -34,11 +36,11 @@ public class ExcelSubParam {
         this.nameCn = nameCn;
     }
 
-    public String getType() {
+    public ColumnTypeEnum getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ColumnTypeEnum type) {
         this.type = type;
     }
 

@@ -1,9 +1,10 @@
 package com.obatis.excel.entry;
 
+import com.obatis.excel.constant.ColumnTypeEnum;
 import com.obatis.excel.constant.ExcelConstant;
 import com.obatis.excel.param.ExcelParam;
 import com.obatis.excel.param.ExcelSubParam;
-import com.obatis.validate.ValidateTool;
+import com.obatis.tools.ValidateTool;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -81,6 +82,7 @@ public class ExportExcel {
         if(param.getColumn().isEmpty()){
             throw new RuntimeException("导出标题未设置");
         }
+
         if(list == null || list.isEmpty()) {
             throw new RuntimeException("数据列表为空");
         }
@@ -167,7 +169,7 @@ public class ExportExcel {
                     columnNumber++;
                 }
             }
-        }else{
+        } else {
             boolean flag = createSerial(param.isSerial(), columnTitleStyle, maxWidth, sheet1, columnTitleRow, isExistSubParam, titleRowIndex, columnNumber);
             int ii=0;
             if(flag){ii = 1;}
@@ -322,15 +324,15 @@ public class ExportExcel {
 
                 createOrderNow = createOrder + x;
 
-                String type = listHeaderData.get(x).getType();
+                ColumnTypeEnum type = listHeaderData.get(x).getType();
                 String format = listHeaderData.get(x).getFormat();
 
-                switch (Integer.valueOf(type)){
-                    case ExcelConstant.TYPE_FIELD_STRING:
+                switch (type){
+                    case STRING:
                         row.createCell(createOrderNow).setCellValue(list.get(i).get(x));
                         row.getCell(createOrderNow).setCellStyle(normalStyle);
                         break;
-                    case ExcelConstant.TYPE_FIELD_NUMBER:
+                    case NUMBER:
                         Matcher isNum = NUMBER_PATTERN.matcher(list.get(i).get(x));
                         if(isNum.matches()){
                             row.createCell(createOrderNow).setCellStyle(normalStyle);
@@ -344,9 +346,9 @@ public class ExportExcel {
                             row.getCell(createOrderNow).setCellStyle(normalStyle);
                         }
                         break;
-                    case ExcelConstant.TYPE_FIELD_DATE:
+                    case DATE:
                         if(null != list.get(i).get(x)){
-                            row.createCell(createOrderNow).setCellValue(ExcelConstant.getDateString(type, list.get(i).get(x)));
+                            row.createCell(createOrderNow).setCellValue(ExcelConstant.getDateString(format, list.get(i).get(x)));
                             row.getCell(createOrderNow).setCellStyle(normalStyle);
                         }
                         break;

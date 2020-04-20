@@ -1,6 +1,7 @@
 package com.obatis.excel.constant;
 
 import com.obatis.convert.date.DefaultDateConstant;
+import com.obatis.tools.ValidateTool;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,29 +12,26 @@ import java.util.Date;
  */
 public class ExcelConstant {
 
-    public static final int TYPE_DATE_TIME = 0;
-    public static final int TYPE_TIME_MILLIS = 1;
-    public static final int TYPE_DATE = 2;
-    public static final int TYPE_YEAR_MONTH_JOINT = 3;
-    public static final int TYPE_DATE_JOINT = 4;
-
     /**
-     * @param type
+     * @param format
      * @param date
      * @return
      */
-    public static String getDateString(String type, Object date){
+    public static String getDateString(String format, Object date){
 
 		SimpleDateFormat sdf = null;
-        if(type.equals(String.valueOf(TYPE_DATE_TIME))){
-        	sdf = DefaultDateConstant.SD_FORMAT_DATE_TIME;
-        }else if(type.equals(String.valueOf(TYPE_TIME_MILLIS))){
+
+		if(ValidateTool.isEmpty(date)) {
+		    return null;
+        } else if(ValidateTool.isEmpty(format) || DefaultDateConstant.DATE_TIME_PATTERN.equals(format)) {
+            sdf = DefaultDateConstant.SD_FORMAT_DATE_TIME;
+        } else if (DefaultDateConstant.TIME_MILLIS_PATTERN.equals(format)) {
             sdf = DefaultDateConstant.SD_FORMAT_TIME_MILLIS;
-        }else if(type.equals(String.valueOf(TYPE_DATE))){
+        } else if (DefaultDateConstant.DATE_PATTERN.equals(format)) {
             sdf = DefaultDateConstant.SD_FORMAT_DATE;
-        }else if(type.equals(String.valueOf(TYPE_YEAR_MONTH_JOINT))){
+        } else if (DefaultDateConstant.YEAR_MONTH_JOINT_PATTERN.equals(format)) {
             sdf = DefaultDateConstant.SD_FORMAT_YEAR_MONTH_JOINT;
-        }else if(type.equals(String.valueOf(TYPE_DATE_JOINT))){
+        } else if (DefaultDateConstant.DATE_JOINT_PATTERN.equals(format)) {
             sdf = DefaultDateConstant.SD_FORMAT_DATE_JOINT;
         }
 
@@ -43,21 +41,5 @@ public class ExcelConstant {
             return date.toString();
         }
     }
-
-
-	/**
-	 * 表示字符串常规类型
-	 */
-	public static final int TYPE_FIELD_STRING = 0;
-	
-	/**
-	 * 表示BigDecimal类型
-	 */
-	public static final int TYPE_FIELD_NUMBER = 1;
-
-	/**
-	 * 表示date类型
-	 */
-	public static final int TYPE_FIELD_DATE = 2;
 
 }
