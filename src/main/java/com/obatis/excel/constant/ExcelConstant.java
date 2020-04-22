@@ -12,6 +12,13 @@ import java.util.Date;
  */
 public class ExcelConstant {
 
+    public static final String COLUMN_HORIZONTAL_KEY_PREFIX = "ch";
+    public static final String COLUMN_VERTICAL_KEY_PREFIX = "cv";
+
+    public static final String ROW_COL_INDEX = "row";
+
+    public static final int DEFAULT_INDEX = 0;
+
     /**
      * @param format
      * @param date

@@ -8,6 +8,7 @@ import com.obatis.tools.ValidateTool;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 
@@ -17,8 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * excel导出类
@@ -27,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class ExportExcel {
 
-    private static Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+.*[0-9]*");
+//    private static Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+.*[0-9]*");
 
     /**
      * 设置style
@@ -88,18 +87,17 @@ public class ExportExcel {
         }
 
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet1 = workbook.createSheet("sheet1");
+        HSSFSheet sheet = workbook.createSheet("sheet1");
 
         //标题头开始行
         int headerRowIndex = 0;
         //列标题开始行
         int titleRowIndex = 1;
-        int columnNumber = 0;
         List<ExcelSubParam> listHeaderData = new ArrayList<>();
 
-        Map<Integer, Integer> maxWidth = new HashMap<>();
-        HSSFRow headerRow = null, columnTitleRow, columnTitleSubRow;
-        boolean isExistSubParam = isExistSubParam(param);
+//        Map<Integer, Integer> maxWidth = new HashMap<>();
+//        HSSFRow headerRow = null, columnTitleRow, columnTitleSubRow;
+        HSSFRow headerRow = null;
         if(ValidateTool.isEmpty(param.getHeader())){
             /**
              * 说明不展示标题，直接从列名开始
@@ -109,7 +107,7 @@ public class ExportExcel {
             /**
              * 创建标题行
              */
-            headerRow = sheet1.createRow(headerRowIndex);
+            headerRow = sheet.createRow(headerRowIndex);
         }
 
         HSSFCellStyle normalStyle = getNormalStyle(workbook);
@@ -117,89 +115,237 @@ public class ExportExcel {
          * 标题下字符串信息描述显示行
           */
         if(!ValidateTool.isEmpty(param.getHeaderMidString())){
-            HSSFRow headerMinInfoRow = sheet1.createRow(titleRowIndex);
+            HSSFRow headerMinInfoRow = sheet.createRow(titleRowIndex);
             headerMinInfoRow.createCell(0).setCellValue(param.getHeaderMidString());
             headerMinInfoRow.getCell(0).setCellStyle(normalStyle);
             titleRowIndex = titleRowIndex + 1;
         }
         if(!ValidateTool.isEmpty(param.getHeaderMidHtml())){
-            int rowNumber = setHtmlStyle(param.getHeaderMidHtml(), workbook, titleRowIndex, sheet1);
+            int rowNumber = setHtmlStyle(param.getHeaderMidHtml(), workbook, titleRowIndex, sheet);
             titleRowIndex = rowNumber;
         }
 
-        columnTitleRow = sheet1.createRow(titleRowIndex);
-        int createDateRow = titleRowIndex;
+//        columnTitleRow = sheet1.createRow(titleRowIndex);
 
         /**
          * 创建列名行
          */
         HSSFCellStyle columnTitleStyle = getColumnTitleStyle(workbook);
-        if(isExistSubParam){
-            createDateRow++;
-            /**
-             * 创建二级子列名行
-             */
-            columnTitleSubRow = sheet1.createRow(titleRowIndex + 1);
+        Map<String, Integer> cellInfoMap = new HashMap<>();
+        boolean isExistSubParam = isExistSubParam(param.getColumn(), cellInfoMap);
+        int subParamChild = cellInfoMap.get("subParamChild");
+//        int columnNumber = 0;
+//        columnTitleRow = sheet.createRow(titleRowIndex);
 
-            createSerial(param.isSerial(), columnTitleStyle, maxWidth, sheet1, columnTitleRow, isExistSubParam, titleRowIndex, columnNumber);
-            if(param.isSerial()){ columnNumber++;}
-            for(int i=0, j=param.getColumn().size(); i<j; i++){
-                List<ExcelSubParam> subParam = param.getColumn().get(i).getSubParam();
-                if(subParam.size() > 0){
-                    CellRangeAddress region = new CellRangeAddress(titleRowIndex, titleRowIndex, columnNumber, columnNumber + subParam.size() - 1);
-                    sheet1.addMergedRegion(region);
-                    columnTitleRow.createCell(columnNumber).setCellValue(param.getColumn().get(i).getNameCn());
-                    columnTitleRow.getCell(columnNumber).setCellStyle(columnTitleStyle);
-                    for(int x =0, y = subParam.size(); x < y; x++){
-                        columnTitleSubRow.createCell(columnNumber + x).setCellValue(subParam.get(x).getNameCn());
-                        listHeaderData.add(subParam.get(x));
-                        setMaxWidth(maxWidth, columnNumber + x, columnTitleSubRow.getCell(columnNumber + x).getStringCellValue().getBytes());
-                        columnTitleSubRow.getCell(columnNumber + x);
-                    }
-                    setMaxWidth(maxWidth, columnNumber, columnTitleRow.getCell(columnNumber).getStringCellValue().getBytes());
-                    columnNumber = columnNumber + subParam.size() - 1;
-                    columnNumber++;
-                }else{
-                    CellRangeAddress region = new CellRangeAddress(titleRowIndex, titleRowIndex + 1, columnNumber, columnNumber);
-                    sheet1.addMergedRegion(region);
+        if(param.isSerial()){
+            Integer[] numberArray = getNumberArray(titleRowIndex, subParamChild);
+            resetRowColIndex(cellInfoMap, 1, numberArray);
+        }
+
+        int createDateRow = titleRowIndex;
+        if(isExistSubParam){
+            createDateRow = titleRowIndex + subParamChild;
+            createSerial(param.isSerial(), columnTitleStyle, cellInfoMap, sheet, null, isExistSubParam, titleRowIndex, getRowColIndex(cellInfoMap, titleRowIndex));
+
+            getCellRangeInfo(param.getColumn(), subParamChild, cellInfoMap, ExcelConstant.DEFAULT_INDEX, ExcelConstant.COLUMN_HORIZONTAL_KEY_PREFIX, ExcelConstant.COLUMN_VERTICAL_KEY_PREFIX);
+            for(int i = 0, j = param.getColumn().size(); i < j; i++){
+                ExcelSubParam excelSubParam = param.getColumn().get(i);
+                if (excelSubParam.getSubParam().size() > 0) {
+                    createCellRange(param.getColumn().get(i), sheet, listHeaderData, cellInfoMap, titleRowIndex, ExcelConstant.DEFAULT_INDEX, ExcelConstant.COLUMN_HORIZONTAL_KEY_PREFIX, ExcelConstant.COLUMN_VERTICAL_KEY_PREFIX, i);
+                } else {
+                    int columnNumber = getRowColIndex(cellInfoMap, titleRowIndex);
+                    CellRangeAddress region = new CellRangeAddress(titleRowIndex, titleRowIndex + subParamChild, columnNumber, columnNumber);
+                    sheet.addMergedRegion(region);
+                    HSSFRow columnTitleRow = createRow(sheet, cellInfoMap, titleRowIndex, subParamChild);
                     columnTitleRow.createCell(columnNumber).setCellStyle(columnTitleStyle);
-                    columnTitleRow.getCell(columnNumber).setCellValue(param.getColumn().get(i).getNameCn());
+                    columnTitleRow.getCell(columnNumber).setCellValue(excelSubParam.getNameCn());
                     listHeaderData.add(param.getColumn().get(i));
-                    setMaxWidth(maxWidth, columnNumber, columnTitleRow.getCell(columnNumber).getStringCellValue().getBytes());
-                    columnNumber++;
+                    setMaxWidth(cellInfoMap, columnNumber, columnTitleRow.getCell(columnNumber).getStringCellValue().getBytes());
+                    Integer[] numberArray = getNumberArray(titleRowIndex, subParamChild);
+                    resetRowColIndex(cellInfoMap, 1, numberArray);
                 }
             }
         } else {
-            boolean flag = createSerial(param.isSerial(), columnTitleStyle, maxWidth, sheet1, columnTitleRow, isExistSubParam, titleRowIndex, columnNumber);
+            HSSFRow columnTitleRow = sheet.createRow(titleRowIndex);
+            boolean flag = createSerial(param.isSerial(), columnTitleStyle, cellInfoMap, sheet, columnTitleRow, isExistSubParam, titleRowIndex, getRowColIndex(cellInfoMap, titleRowIndex));
             int ii=0;
             if(flag){ii = 1;}
             for(int i=0, j=param.getColumn().size(); i<j; i++){
                 columnTitleRow.createCell(i + ii).setCellStyle(columnTitleStyle);
                 columnTitleRow.getCell(i + ii).setCellValue(param.getColumn().get(i).getNameCn());
                 listHeaderData.add(param.getColumn().get(i));
-                setMaxWidth(maxWidth, i + ii, columnTitleRow.getCell(i).getStringCellValue().getBytes());
-                columnNumber++;
+                setMaxWidth(cellInfoMap, i + ii, columnTitleRow.getCell(i).getStringCellValue().getBytes());
+                resetRowColIndex(cellInfoMap, 1, titleRowIndex);
             }
         }
 
+        int columnNumber = getRowColIndex(cellInfoMap, subParamChild);
         /**
          * 设置Excel标题
          */
-        setHeader(columnNumber, param, sheet1, headerRow, getHeaderStyle(workbook));
+        setHeader(columnNumber, param, sheet, headerRow, getHeaderStyle(workbook));
 
-        for (int i= 0; i<columnNumber;i++){
-            sheet1.setColumnWidth(i, maxWidth.get(i));
-        }
-        int endRow = setListData(normalStyle,createDateRow + 1, param, listHeaderData, sheet1, list);
+//        for (int i= 0; i<columnNumber;i++){
+//            sheet.setColumnWidth(i, cellInfoMap.get(i));
+//        }
+        int endRow = setListData(normalStyle,createDateRow + subParamChild, param, listHeaderData, sheet, list);
 
         if(null != param.getHeaderEndHtml()){
-            setHtmlStyle(param.getHeaderEndHtml(), workbook, endRow, sheet1);
+            setHtmlStyle(param.getHeaderEndHtml(), workbook, endRow, sheet);
         }
 
-        setMergeOtherCell(columnNumber, param, sheet1, endRow);
+        setMergeOtherCell(columnNumber, param, sheet, endRow);
         return workbook;
     }
 
+    private static Integer[] getNumberArray(int begin, int flagCount) {
+        Integer[] numberArray = new Integer[flagCount + 1];
+        for(int i = 0; i <= flagCount; i++) {
+            numberArray[i] = begin + i;
+        }
+
+        return numberArray;
+    }
+
+    private static HSSFRow createRow(HSSFSheet sheet, Map<String, Integer> cellInfoMap, int titleRowIndex, int subParamChild) {
+        HSSFRow defaultColumnTitleRow = null;
+        for (int i = 0; i <= subParamChild; i++) {
+            HSSFRow tempHSSFRow;
+            if(!cellInfoMap.containsKey(ExcelConstant.ROW_COL_INDEX + "_" + i)) {
+                tempHSSFRow = sheet.createRow(titleRowIndex + i);
+            } else {
+                tempHSSFRow = sheet.getRow(titleRowIndex + i);
+            }
+
+            resetRowColIndex(cellInfoMap, 0, i);
+            if(i == 0) {
+                defaultColumnTitleRow = tempHSSFRow;
+            }
+        }
+        return defaultColumnTitleRow;
+    }
+
+    /**
+     * 创建单元格
+     * @param excelSubParam
+     * @param sheet
+     * @param handleIndex
+     */
+    private static void createCellRange(ExcelSubParam excelSubParam, HSSFSheet sheet, List<ExcelSubParam> listHeaderData, Map<String, Integer> cellInfoMap, int titleRowIndex, int index, String columnHorizontalKey, String columnVerticalKey, int handleIndex) {
+
+        HSSFRow columnTitleRow;
+        if(!cellInfoMap.containsKey(ExcelConstant.ROW_COL_INDEX + "_" + (titleRowIndex + index))) {
+            columnTitleRow = sheet.createRow(titleRowIndex + (titleRowIndex + index));
+        } else {
+            columnTitleRow = sheet.getRow(titleRowIndex + index);
+            if(columnTitleRow == null) {
+                columnTitleRow = sheet.createRow(titleRowIndex + index);
+            }
+        }
+
+        String tempColumnHorizontalKey = columnHorizontalKey + "_" + handleIndex;
+        String tempColumnVerticalKey = columnVerticalKey + "_" + handleIndex;
+        int rowColIndex = getRowColIndex(cellInfoMap, titleRowIndex + index);
+
+        int horizontalCell = cellInfoMap.get(tempColumnHorizontalKey);
+        if(horizontalCell > 1) {
+            // 说明需要合并单元格
+            CellRangeAddress region = new CellRangeAddress(titleRowIndex + index, titleRowIndex + index + cellInfoMap.get(tempColumnVerticalKey), rowColIndex, rowColIndex + (horizontalCell - 1));
+            sheet.addMergedRegion(region);
+        }
+
+        resetRowColIndex(cellInfoMap, horizontalCell, titleRowIndex + index);
+        columnTitleRow.createCell(rowColIndex).setCellValue(excelSubParam.getNameCn());
+
+
+        List<ExcelSubParam> subParamList = excelSubParam.getSubParam();
+        int subParamListSize = subParamList.size();
+        if(subParamListSize == 0) {
+//            setMaxWidth(cellInfoMap, horizontalCell, columnTitleRow.getCell(horizontalCell).getStringCellValue().getBytes());
+
+            listHeaderData.add(excelSubParam);
+        }
+
+        for(int i = 0; i < subParamListSize; i++) {
+            createCellRange(subParamList.get(i), sheet, listHeaderData, cellInfoMap, titleRowIndex, index + 1, tempColumnHorizontalKey, tempColumnVerticalKey, i);
+        }
+    }
+
+    private static boolean isMergedRegion(HSSFSheet sheet, int row , int column) {
+        int sheetMergeCount = sheet.getNumMergedRegions();
+        for (int i = 0; i < sheetMergeCount; i++) {
+            CellRangeAddress range = sheet.getMergedRegion(i);
+            int firstColumn = range.getFirstColumn();
+            int lastColumn = range.getLastColumn();
+            int firstRow = range.getFirstRow();
+            int lastRow = range.getLastRow();
+            if(row >= firstRow && row <= lastRow){
+                if(column >= firstColumn && column <= lastColumn){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void resetRowColIndex(Map<String, Integer> cellInfoMap, int addIndex, Integer...indexArray) {
+        for (Integer index : indexArray) {
+            int rowColIndex = getRowColIndex(cellInfoMap, index);
+            cellInfoMap.put(ExcelConstant.ROW_COL_INDEX + "_" + index, rowColIndex + addIndex);
+        }
+    }
+
+    private static int getRowColIndex(Map<String, Integer> cellInfoMap, int index) {
+        Integer rowColIndex = cellInfoMap.get(ExcelConstant.ROW_COL_INDEX + "_" + index);
+        if(rowColIndex == null) {
+            rowColIndex = 0;
+        }
+        return rowColIndex;
+    }
+
+    /**
+     * 处理单元格坐标占位
+     * @param column
+     * @param subParamChild
+     * @param cellInfoMap
+     * @param index
+     * @param columnHorizontalKey
+     * @param columnVerticalKey
+     */
+    private static void getCellRangeInfo(List<ExcelSubParam> column, int subParamChild, Map<String, Integer> cellInfoMap, int index, String columnHorizontalKey, String columnVerticalKey) {
+        for (int i = 0, j = column.size(); i < j; i++) {
+            String tempColumnHorizontalKey = columnHorizontalKey + "_" + i;
+            String tempColumnVerticalKey = columnVerticalKey + "_" + i;
+            ExcelSubParam paramArray = column.get(i);
+            List<ExcelSubParam> subParamArray = paramArray.getSubParam();
+            int subParamArraySize = subParamArray.size();
+            if(subParamArraySize > 0) {
+                cellInfoMap.put(tempColumnHorizontalKey, subParamArraySize);
+                cellInfoMap.put(tempColumnVerticalKey, index);
+                 // 重置上级单元格的横坐标跨度
+                resetCellRangeInfo(cellInfoMap, columnHorizontalKey, subParamArraySize);
+                getCellRangeInfo(subParamArray, subParamChild, cellInfoMap, index + 1, tempColumnHorizontalKey, tempColumnVerticalKey);
+            } else {
+                cellInfoMap.put(tempColumnHorizontalKey, 1);
+                cellInfoMap.put(tempColumnVerticalKey, subParamChild);
+            }
+        }
+    }
+
+    /**
+     * 重置上级单元格的横坐标跨度
+     * @param cellInfoMap
+     * @param columnHorizontalKey
+     * @param addColumn
+     */
+    private static void resetCellRangeInfo(Map<String, Integer> cellInfoMap, String columnHorizontalKey, int addColumn) {
+        if(ExcelConstant.COLUMN_HORIZONTAL_KEY_PREFIX.equals(columnHorizontalKey)) {
+            return;
+        }
+
+        cellInfoMap.put(columnHorizontalKey, cellInfoMap.get(columnHorizontalKey) + (addColumn - 1));
+        resetCellRangeInfo(cellInfoMap, columnHorizontalKey.substring(0, columnHorizontalKey.lastIndexOf("_")), addColumn);
+    }
 
     /**
      * 合并其他单元格
@@ -209,9 +355,9 @@ public class ExportExcel {
      */
     private static void setMergeOtherCell(int columnNumber, ExcelParam param, HSSFSheet sheet1, int endRow){
         int upDown = 0;
-        if(param.isSerial()){
-            columnNumber ++;
-        }
+//        if(param.isSerial()){
+//            columnNumber ++;
+//        }
         if(null != param.getHeader()){
             upDown = 1;
         }
@@ -244,17 +390,16 @@ public class ExportExcel {
      * 设置标题文件
      * @param columnNumber
      * @param param
-     * @param sheet1
-     * @param row0
+     * @param sheet
+     * @param headerRow
      * @param style
      */
-    private static void setHeader(int columnNumber, ExcelParam param, HSSFSheet sheet1, HSSFRow row0, HSSFCellStyle style){
-        if(param.isSerial()){columnNumber ++;}
-        if(null != row0 && (columnNumber - 1) != 0){
-            CellRangeAddress headerRegion = new CellRangeAddress(0, 0, 0, columnNumber - 1);
-            sheet1.addMergedRegion(headerRegion);
-            row0.createCell(0).setCellValue(param.getHeader());
-            row0.getCell(0).setCellStyle(style);
+    private static void setHeader(int columnNumber, ExcelParam param, HSSFSheet sheet, HSSFRow headerRow, HSSFCellStyle style){
+        if(null != headerRow && (columnNumber - 1) != 0){
+//            CellRangeAddress headerRegion = new CellRangeAddress(0, 0, 0, columnNumber - 1);
+//            sheet.addMergedRegion(headerRegion);
+            headerRow.createCell(0).setCellValue(param.getHeader());
+            headerRow.getCell(0).setCellStyle(style);
         }
     }
 
@@ -264,18 +409,22 @@ public class ExportExcel {
      * @param isExistSubParam
      */
     private static boolean createSerial(boolean isSerial, HSSFCellStyle columnTitleStyle,
-                                        Map<Integer, Integer> maxWidth,
-                                        HSSFSheet sheet1,
+                                        Map<String, Integer> maxWidth,
+                                        HSSFSheet sheet,
                                         HSSFRow columnTitleRow,
                                         boolean isExistSubParam,
                                         int titleRow,
                                         int columnNumber){
         boolean flag = false;
 
+        if(columnTitleRow == null) {
+            columnTitleRow = sheet.createRow(titleRow);
+        }
+
         if(isSerial){
             if(isExistSubParam){
                 CellRangeAddress regionSerial = new CellRangeAddress(titleRow, titleRow + 1, columnNumber, columnNumber);
-                sheet1.addMergedRegion(regionSerial);
+                sheet.addMergedRegion(regionSerial);
                 columnTitleRow.createCell(columnNumber).setCellValue("序号");
                 columnTitleRow.getCell(columnNumber).setCellStyle(columnTitleStyle);
                 setMaxWidth(maxWidth, columnNumber, columnTitleRow.getCell(columnNumber).getStringCellValue().getBytes());
@@ -296,8 +445,8 @@ public class ExportExcel {
      * @param column
      * @param b
      */
-    private static void setMaxWidth(Map<Integer,Integer> maxWidth, int column, byte[] b){
-        maxWidth.put(column, b.length * 256 + 200);
+    private static void setMaxWidth(Map<String,Integer> maxWidth, int column, byte[] b){
+        maxWidth.put(column + "", b.length * 256 + 200);
     }
 
     /**
@@ -305,13 +454,13 @@ public class ExportExcel {
      * @param createDataRow
      * @param param
      * @param listHeaderData 二级子元素数据，主要使用样式
-     * @param sheet1
+     * @param sheet
      * @param list
      */
-    private static int setListData(HSSFCellStyle normalStyle, int createDataRow, ExcelParam param, List<ExcelSubParam> listHeaderData, HSSFSheet sheet1, List<List<String>> list){
+    private static int setListData(HSSFCellStyle normalStyle, int createDataRow, ExcelParam param, List<ExcelSubParam> listHeaderData, HSSFSheet sheet, List<List<String>> list){
         int serial = 0;
         for(int i=0, j=list.size(); i<j; i++){
-            HSSFRow row = sheet1.createRow(createDataRow);
+            HSSFRow row = sheet.createRow(createDataRow);
             int createOrder = 0;
             int createOrderNow;
             if(param.isSerial()){
@@ -333,8 +482,8 @@ public class ExportExcel {
                         row.getCell(createOrderNow).setCellStyle(normalStyle);
                         break;
                     case NUMBER:
-                        Matcher isNum = NUMBER_PATTERN.matcher(list.get(i).get(x));
-                        if(isNum.matches()){
+//                        Matcher isNum = NUMBER_PATTERN.matcher(list.get(i).get(x));
+                        if(ValidateTool.isNumber(list.get(i).get(x))){
                             row.createCell(createOrderNow).setCellStyle(normalStyle);
                             if(ValidateTool.isEmpty(format)){
                                 row.getCell(createOrderNow).setCellValue(new BigDecimal(list.get(i).get(x)).toString());
@@ -364,33 +513,54 @@ public class ExportExcel {
 
     /**
      * 是否存在子元素
-     * @param param
+     * @param column
      * @return
      */
-    private static boolean isExistSubParam(ExcelParam param){
-        boolean flag = false;
-        for(int i=0, j=param.getColumn().size(); i<j; i++){
-            if(param.getColumn().get(i).getSubParam().size() > 0){
-                flag = true;
-                break;
+    private static boolean isExistSubParam(List<ExcelSubParam> column, Map<String, Integer> titleParamInfoMap){
+        int subParamChild = 0;
+        for (int i = 0, j = column.size(); i < j; i++) {
+            ExcelSubParam subParam = column.get(i);
+            int tempSubParamChild = getSubParamChildInfo(subParam, subParamChild);
+            if(tempSubParamChild > subParamChild) {
+                subParamChild = tempSubParamChild;
             }
         }
-        return flag;
+
+        titleParamInfoMap.put("subParamChild", subParamChild);
+        return subParamChild > 0;
+    }
+
+    private static int getSubParamChildInfo(ExcelSubParam subParam, int subParamChild) {
+
+        if(subParam.getSubParam().isEmpty()) {
+            return subParamChild;
+        }
+
+        subParamChild ++;
+        int maxTempParamChild = 0;
+
+        for (ExcelSubParam subParamItem : subParam.getSubParam()) {
+            int tempSubParamChild = getSubParamChildInfo(subParamItem, subParamChild);
+            if(tempSubParamChild > maxTempParamChild) {
+                maxTempParamChild = tempSubParamChild;
+            }
+        }
+        return maxTempParamChild;
     }
 
     /**
      * 设置html文本附加格式
      * @param content
-     * @param wb
+     * @param workbook
      * @param createRow
-     * @param sheet1
+     * @param sheet
      */
-    private static int setHtmlStyle(String content, HSSFWorkbook wb, int createRow, HSSFSheet sheet1){
+    private static int setHtmlStyle(String content, HSSFWorkbook workbook, int createRow, HSSFSheet sheet){
 
         String[] list = content.split("\n");
 
         for(String str : list) {
-            HSSFRow row = sheet1.createRow(createRow);
+            HSSFRow row = sheet.createRow(createRow);
             String strSub = "";
             if(str.contains("</strong>")){
                 strSub = str.substring(str.indexOf("<strong>") + 8, str.lastIndexOf("</strong>"));
@@ -423,8 +593,8 @@ public class ExportExcel {
             row.createCell(0).setCellValue(strSub);
             createRow = createRow + 1;
 
-            HSSFCellStyle style = wb.createCellStyle();
-            HSSFFont font = wb.createFont();
+            HSSFCellStyle style = workbook.createCellStyle();
+            HSSFFont font = workbook.createFont();
 
             if (str.contains("style")){
                 String styleString = str.substring(str.indexOf("=") + 2, str.lastIndexOf(";\""));
