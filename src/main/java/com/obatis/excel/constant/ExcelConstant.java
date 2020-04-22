@@ -16,6 +16,7 @@ public class ExcelConstant {
     public static final String COLUMN_VERTICAL_KEY_PREFIX = "cv";
 
     public static final String ROW_COL_INDEX = "row";
+    public static final String COLUMN_NUMBER_KEY = "column_number";
 
     public static final int DEFAULT_INDEX = 0;
 
