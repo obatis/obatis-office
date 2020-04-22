@@ -1,9 +1,9 @@
-package com.obatis.excel.entry;
+package com.obatis.office.excel.entry;
 
-import com.obatis.excel.constant.ColumnTypeEnum;
-import com.obatis.excel.constant.ExcelConstant;
-import com.obatis.excel.param.ExcelParam;
-import com.obatis.excel.param.ExcelSubParam;
+import com.obatis.office.excel.constant.ColumnTypeEnum;
+import com.obatis.office.excel.constant.ExcelConstant;
+import com.obatis.office.excel.param.ExcelParam;
+import com.obatis.office.excel.param.ExcelSubParam;
 import com.obatis.tools.ValidateTool;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;

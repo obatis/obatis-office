@@ -1,6 +1,6 @@
-package com.obatis.excel.param;
+package com.obatis.office.excel.param;
 
-import com.obatis.excel.constant.ColumnTypeEnum;
+import com.obatis.office.excel.constant.ColumnTypeEnum;
 
 import java.util.ArrayList;
 import java.util.List;

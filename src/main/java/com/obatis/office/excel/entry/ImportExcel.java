@@ -1,4 +1,4 @@
-package com.obatis.excel.entry;
+package com.obatis.office.excel.entry;
 
 import com.obatis.convert.date.DateCommonConvert;
 import com.obatis.convert.date.DefaultDateConstant;

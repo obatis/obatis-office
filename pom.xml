@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.obatis</groupId>
-    <artifactId>obatis-excel</artifactId>
+    <artifactId>obatis-office</artifactId>
     <version>1.0.1</version>
     <packaging>jar</packaging>
-    <name>obatis-excel</name>
-    <description>obatis-excel, apply excel export project</description>
-    <url>https://github.com/obatis/obatis-excel</url>
+    <name>obatis-office</name>
+    <description>obatis-office, apply excel export project</description>
+    <url>https://github.com/obatis/obatis-office</url>
 
     <!-- 中央仓库 -->
     <!--<distributionManagement>-->
@@ -39,8 +39,8 @@
     </properties>
 
     <scm>
-        <url>https://github.com/obatis/obatis-excel</url>
-        <connection>scm:git:https://github.com/obatis/obatis-excel.git</connection>
+        <url>https://github.com/obatis/obatis-office</url>
+        <connection>scm:git:https://github.com/obatis/obatis-office.git</connection>
     </scm>
 
     <organization>

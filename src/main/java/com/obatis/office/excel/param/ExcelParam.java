@@ -1,4 +1,4 @@
-package com.obatis.excel.param;
+package com.obatis.office.excel.param;
 
 import java.util.ArrayList;
 import java.util.List;

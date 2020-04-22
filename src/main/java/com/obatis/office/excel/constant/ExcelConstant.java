@@ -1,4 +1,4 @@
-package com.obatis.excel.constant;
+package com.obatis.office.excel.constant;
 
 import com.obatis.convert.date.DefaultDateConstant;
 import com.obatis.tools.ValidateTool;
