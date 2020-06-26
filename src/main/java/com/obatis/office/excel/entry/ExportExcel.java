@@ -26,8 +26,6 @@ import java.util.Map;
  */
 public class ExportExcel {
 
-//    private static Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+.*[0-9]*");
-
     /**
      * 设置style
      * @date 2018年12月10日15:21:49
