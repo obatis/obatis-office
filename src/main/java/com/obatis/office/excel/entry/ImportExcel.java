@@ -1,7 +1,6 @@
 package com.obatis.office.excel.entry;
 
 import com.obatis.convert.date.DateCommonConvert;
-import com.obatis.convert.date.DefaultDateConstant;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
@@ -150,19 +149,23 @@ public class ImportExcel {
 			if (HSSFDateUtil.isCellDateFormatted(cell)) {
 				SimpleDateFormat sdf;
 				if (cell.getCellStyle().getDataFormat() == HSSFDataFormat.getBuiltinFormat("h:mm")) {
-//					sdf = new SimpleDateFormat("HH:mm");
-					sdf = DefaultDateConstant.SD_FORMAT_HOUR_MINUTE;
+					sdf = new SimpleDateFormat("HH:mm");
+//					sdf = DefaultDateConstant.SD_FORMAT_HOUR_MINUTE;
 				} else {
 					// 日期
 
-//					sdf = new SimpleDateFormat("yyyy-MM-dd");
-					sdf = DefaultDateConstant.SD_FORMAT_DATE;
+					sdf = new SimpleDateFormat("yyyy-MM-dd");
+//					sdf = DefaultDateConstant.SD_FORMAT_DATE;
 				}
 				Date date = cell.getDateCellValue();
 				content = sdf.format(date);
 			} else if (cell.getCellStyle().getDataFormat() == 58) {
 				// 处理自定义日期格式：m月d日(通过判断单元格的格式id解决，id的值是58)
-				content = DateCommonConvert.formatDate(DateUtil.getJavaDate(cell.getNumericCellValue()));
+//				content = DateCommonConvert.formatDate(DateUtil.getJavaDate(cell.getNumericCellValue()));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				double value = cell.getNumericCellValue();
+				Date date = org.apache.poi.ss.usermodel.DateUtil.getJavaDate(value);
+				content = sdf.format(date);
 			} else {
 				double value = cell.getNumericCellValue();
 				CellStyle style = cell.getCellStyle();

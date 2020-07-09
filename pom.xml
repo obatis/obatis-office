@@ -5,7 +5,7 @@
 
     <groupId>com.obatis</groupId>
     <artifactId>obatis-office</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.1.1-beta</version>
     <packaging>jar</packaging>
     <name>obatis-office</name>
     <description>obatis-office, apply excel export project</description>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.obatis</groupId>
             <artifactId>obatis-tools</artifactId>
-            <version>1.0.13</version>
+            <version>1.1.1-beta</version>
         </dependency>
     </dependencies>
 
