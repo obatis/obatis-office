@@ -1,4 +1,4 @@
-package com.obatis.excel.constant;
+package com.obatis.office.excel.constant;
 
 public enum ColumnTypeEnum {
 
