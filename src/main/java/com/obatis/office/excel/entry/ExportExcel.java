@@ -499,13 +499,12 @@ public class ExportExcel {
                         row.getCell(createOrderNow).setCellStyle(normalStyle);
                         break;
                     case NUMBER:
-//                        Matcher isNum = NUMBER_PATTERN.matcher(list.get(i).get(x));
                         if(ValidateTool.isNumber(list.get(i).get(x))){
                             row.createCell(createOrderNow).setCellStyle(normalStyle);
                             if(ValidateTool.isEmpty(format)){
-                                row.getCell(createOrderNow).setCellValue(new BigDecimal(list.get(i).get(x)).toString());
+                                row.getCell(createOrderNow).setCellValue(new BigDecimal(list.get(i).get(x)).doubleValue());
                             }else{
-                                row.getCell(createOrderNow).setCellValue(new BigDecimal(list.get(i).get(x)).setScale(Integer.valueOf(format), RoundingMode.HALF_UP).toString());
+                                row.getCell(createOrderNow).setCellValue(new BigDecimal(list.get(i).get(x)).setScale(Integer.valueOf(format), RoundingMode.HALF_UP).doubleValue());
                             }
                         }else{
                             row.createCell(createOrderNow).setCellValue(list.get(i).get(x));
