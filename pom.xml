@@ -5,23 +5,17 @@
 
     <groupId>com.obatis</groupId>
     <artifactId>obatis-office</artifactId>
-    <version>1.0.1.5-beta</version>
+    <version>1.0.2-release</version>
     <packaging>jar</packaging>
     <name>obatis-office</name>
     <description>obatis-office, apply excel export project</description>
     <url>https://github.com/obatis/obatis-office</url>
 
     <!-- 中央仓库 -->
-    <!--<distributionManagement>-->
-        <!--<repository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-        <!--</repository>-->
-    <!--</distributionManagement>-->
     <distributionManagement>
         <repository>
-            <id>private-oss</id>
-            <url>http://maven.gclasp.com/nexus/content/repositories/releases/</url>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
@@ -135,7 +129,7 @@
         <dependency>
             <groupId>com.obatis</groupId>
             <artifactId>obatis-tools</artifactId>
-            <version>1.1.1.4-beta</version>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
 
