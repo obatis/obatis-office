@@ -1,6 +1,6 @@
 package com.obatis.office.excel.constant;
 
-import com.obatis.convert.date.DateCommonConvert;
+import com.obatis.convert.date.DateConvert;
 import com.obatis.tools.ValidateTool;
 
 import java.time.LocalDate;
@@ -31,23 +31,23 @@ public class ExcelConstant {
 		if(ValidateTool.isEmpty(date)) {
 		    return null;
         } else if(date instanceof Date) {
-            LocalDateTime dateTime = DateCommonConvert.parseDateTimeByMilli(((Date) date).getTime());
+            LocalDateTime dateTime = DateConvert.parseDateTimeByMilli(((Date) date).getTime());
             if(ValidateTool.isEmpty(format)) {
-                return DateCommonConvert.formatDateTime(dateTime);
+                return DateConvert.formatDateTime(dateTime);
             } else {
-		        return DateCommonConvert.formatDateTime(dateTime, format);
+		        return DateConvert.formatDateTime(dateTime, format);
             }
         } else if (date instanceof LocalDate) {
 		    if(ValidateTool.isEmpty(format)) {
-		        return DateCommonConvert.formatDate((LocalDate) date);
+		        return DateConvert.formatDate((LocalDate) date);
             } else {
-		        return DateCommonConvert.formatDate((LocalDate) date, format);
+		        return DateConvert.formatDate((LocalDate) date, format);
             }
         } else if (date instanceof LocalDateTime) {
             if(ValidateTool.isEmpty(format)) {
-                return DateCommonConvert.formatDateTime((LocalDateTime) date);
+                return DateConvert.formatDateTime((LocalDateTime) date);
             } else {
-                return DateCommonConvert.formatDate((LocalDate) date, format);
+                return DateConvert.formatDate((LocalDate) date, format);
             }
         } else {
 		    return date.toString();
